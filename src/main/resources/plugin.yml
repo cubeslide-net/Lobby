@@ -1,0 +1,10 @@
+name: LobbySystem
+version: '${project.version}'
+main: net.cubeslide.lobbysystem.LobbySystem
+api-version: 1.16
+
+commands:
+  spawn:
+  build:
+  checkpoint:
+

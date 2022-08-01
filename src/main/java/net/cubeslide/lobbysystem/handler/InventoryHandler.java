@@ -23,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class InventoryHandler implements Listener {
 
     public static final String skywarsffa_name = "§8[§5SkywarsFFA§8]";
-
+    public static final String oneblock_name = "§8[§5MC-OneBlock§8]";
     public static CopyOnWriteArrayList<Player> hidden = new CopyOnWriteArrayList<>();
 
 
@@ -45,6 +45,7 @@ public class InventoryHandler implements Listener {
                 }
 
                 inventory.setItem(13, new ItemBuilder(Material.DIAMOND_SWORD).setDisplayname(skywarsffa_name).build());
+                inventory.setItem(16, new ItemBuilder(Material.GRASS_BLOCK).setDisplayname(oneblock_name).build());
 
                 player.openInventory(inventory);
                 player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1F, 1F);
@@ -92,10 +93,15 @@ public class InventoryHandler implements Listener {
                         if (player.getOpenInventory().getTitle().equals(JoinQuitHandler.navigator_name)) {
                             event.setCancelled(true);
                             if (event.getCurrentItem() != null && event.getCurrentItem().getItemMeta().getDisplayName() != null) {
-                                if (event.getCurrentItem().getType() == Material.DIAMOND_SWORD || event.getCurrentItem().getItemMeta().getDisplayName().equals("§8[§5SkywarsFFA§8]")) {
+                                if (event.getCurrentItem().getType() == Material.DIAMOND_SWORD || event.getCurrentItem().getItemMeta().getDisplayName().equals(skywarsffa_name)) {
                                     player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
                                     final IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
                                     playerManager.getPlayerExecutor(playerManager.getOnlinePlayer(player.getUniqueId())).connect("SkywarsFFA-1"); //send a player to the target server if the player is login on a proxy
+                                }
+                                if (event.getCurrentItem().getType() == Material.GRASS_BLOCK || event.getCurrentItem().getItemMeta().getDisplayName().equals(oneblock_name)) {
+                                    player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
+                                    final IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
+                                    playerManager.getPlayerExecutor(playerManager.getOnlinePlayer(player.getUniqueId())).connect("MCOneBlock-1"); //send a player to the target server if the player is login on a proxy
                                 }
                             }
                         }

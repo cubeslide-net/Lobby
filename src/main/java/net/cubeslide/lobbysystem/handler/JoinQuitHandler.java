@@ -15,7 +15,6 @@ import org.bukkit.inventory.Inventory;
 public class JoinQuitHandler implements Listener {
     public static final String navigator_name = "§8[§9Navigator§8]";
     public static final String playerhider_name = "§8[§9Player§3Hider§8]";
-    public static final String stats_name = "§8[§9Stats§8]";
 
     @EventHandler
     public void on(PlayerJoinEvent event){
@@ -45,7 +44,6 @@ public class JoinQuitHandler implements Listener {
         playerInv.clear();
         playerInv.setItem(1, new ItemBuilder(Material.BLAZE_ROD).setDisplayname(playerhider_name).build());
         playerInv.setItem(4, new ItemBuilder(Material.COMPASS).setDisplayname(navigator_name).build());
-        playerInv.setItem(7, new ItemBuilder(Material.DIAMOND).setDisplayname(stats_name).build());
     }
 
 }

@@ -37,12 +37,7 @@ public final class LobbySystem extends JavaPlugin {
         pluginManager.registerEvents(new InventoryHandler(), this);
         pluginManager.registerEvents(new PlayerHandler(), this);
         pluginManager.registerEvents(new CheckpointHandler(), this);
-
-        getConfig().addDefault("MYSQL.HOSTNAME", "localhost");
-        getConfig().addDefault("MYSQL.USERNAME", "root");
-        getConfig().addDefault("MYSQL.PASSWORD", "");
-        getConfig().addDefault("MYSQL.DATABASE", "SkyWarsFFA");
-        getConfig().addDefault("MYSQL.PORT", 3306);
+        
         getConfig().addDefault("prefix", "&3CubeSlide &8» &7");
         getConfig().addDefault("noPermission", "&cYou don't have permissions to do that.");
         getConfig().addDefault("noPlayer", "&cYou need to be a player to do that.");

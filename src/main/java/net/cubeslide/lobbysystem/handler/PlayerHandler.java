@@ -1,5 +1,6 @@
 package net.cubeslide.lobbysystem.handler;
 
+import java.util.Objects;
 import net.cubeslide.lobbysystem.LobbySystem;
 import net.cubeslide.lobbysystem.commands.BuildCMD;
 import org.bukkit.Location;
@@ -22,7 +23,6 @@ public class PlayerHandler implements Listener {
     @EventHandler
     public void on(PlayerInteractEvent event) {
         final Player player = event.getPlayer();
-        if (player == null) return;
         final UUID playerUUID = player.getUniqueId();
         if (!BuildCMD.getInBuildMode().contains(playerUUID)) {
             event.setCancelled(true);
@@ -32,7 +32,6 @@ public class PlayerHandler implements Listener {
     @EventHandler
     public void on(PlayerDropItemEvent event) {
         final Player player = event.getPlayer();
-        if (player == null) return;
         final UUID playerUUID = player.getUniqueId();
         if (!BuildCMD.getInBuildMode().contains(playerUUID)) {
             event.setCancelled(true);
@@ -42,7 +41,6 @@ public class PlayerHandler implements Listener {
     @EventHandler
     public void on(PlayerPickupItemEvent event) {
         final Player player = event.getPlayer();
-        if (player == null) return;
         final UUID playerUUID = player.getUniqueId();
         if (!BuildCMD.getInBuildMode().contains(playerUUID)) {
             event.setCancelled(true);
@@ -53,7 +51,6 @@ public class PlayerHandler implements Listener {
     public void on(EntityDamageEvent event){
         if(!(event.getEntity() instanceof Player)) return;
         final Player player = (Player) event.getEntity();
-        if (player == null) return;
         final UUID playerUUID = player.getUniqueId();
         if (!BuildCMD.getInBuildMode().contains(playerUUID)) {
             event.setCancelled(true);
@@ -68,7 +65,8 @@ public class PlayerHandler implements Listener {
             if(player.getLocation().getBlockY() < 0){
                 Location loc = CheckpointHandler.getCurrentCheckpoint().get(player);
                 if(loc == null) {
-                    player.teleport((Location) instance.getConfig().get("spawn"));
+                    player.teleport((Location) Objects.requireNonNull(
+                        instance.getConfig().get("spawn")));
                 }else{
                     player.teleport(CheckpointHandler.getCurrentCheckpoint().get(player));
                     player.sendMessage(LobbySystem.getPrefix() + "You were teleported to your last checkpoint. Use §3/checkpoint remove§7 to respawn at spawn.");

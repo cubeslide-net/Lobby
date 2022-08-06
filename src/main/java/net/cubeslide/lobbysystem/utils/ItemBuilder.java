@@ -10,8 +10,8 @@ import java.util.Arrays;
 public class ItemBuilder {
 
 
-    private ItemMeta itemMeta;
-    private ItemStack itemStack;
+    private final ItemMeta itemMeta;
+    private final ItemStack itemStack;
 
     public ItemBuilder(Material mat) {
         itemStack = new ItemStack(mat);
@@ -45,10 +45,7 @@ public class ItemBuilder {
 
     @Override
     public String toString() {
-        return "ItemBuilder{" +
-                "itemMeta=" + itemMeta +
-                ", itemStack=" + itemStack +
-                '}';
+        return "ItemBuilder{" + "itemMeta=" + itemMeta + ", itemStack=" + itemStack + '}';
     }
 
     public ItemStack build() {

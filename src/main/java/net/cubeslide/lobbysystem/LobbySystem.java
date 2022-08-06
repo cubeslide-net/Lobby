@@ -45,10 +45,6 @@ public final class LobbySystem extends JavaPlugin {
         return Objects.requireNonNull(instance.getConfig().getString("noPlayer")).replace("&", "§");
     }
 
-    public static String getPlayerNotOnline() {
-        return Objects.requireNonNull(instance.getConfig().getString("playerNotOnline")).replace("&", "§");
-    }
-
     public static String getPrefixUse() {
         return Objects.requireNonNull(instance.getConfig().getString("prefixUse")).replace("&", "§");
     }
@@ -131,7 +127,6 @@ public final class LobbySystem extends JavaPlugin {
             tmp_list.add(line.replace("%rank%", permissionManagement.getHighestPermissionGroup(iPermissionUser).getName()).replace("%server%", iPlayerManager.getOnlinePlayer(player.getUniqueId()).getConnectedService().getServerName()).replace("%online%", String.valueOf(Bukkit.getOnlinePlayers().size())).replace("&", "§"));
         });
         board.updateLines(tmp_list);
-        board.updateTitle(getConfig().getString("scoreboard.title").replace("&", "§"));
     }
 
 

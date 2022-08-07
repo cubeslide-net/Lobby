@@ -21,10 +21,12 @@ import java.util.UUID;
 
 public class PlayerHandler implements Listener {
 
+
     public static final String navigator_name = "§8[§dNavigator§8]";
     public static final String playerhider_name = "§8[§3Player§bHider§8]";
     public static final String enderpearl_name = "§8[§2Ender§aPearl§8]";
     private static final HashMap<UUID, Integer> playerUsedEP = new HashMap<>();
+
     final LobbySystem instance = LobbySystem.getInstance();
 
     public static void setInventory(Player player) {
@@ -38,6 +40,8 @@ public class PlayerHandler implements Listener {
     public static HashMap<UUID, Integer> getPlayerUsedEP() {
         return playerUsedEP;
     }
+
+
 
     @EventHandler
     public void on(PlayerJoinEvent event) {

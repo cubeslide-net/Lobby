@@ -113,7 +113,7 @@ public final class LobbySystem extends JavaPlugin {
                 if (!map.containsKey(player.getUniqueId())) return;
                 if (map.get(player.getUniqueId()) < 1) {
                     if (!player.getInventory().contains(new ItemBuilder(Material.ENDER_PEARL).build())) {
-                        player.getInventory().setItem(7, new ItemBuilder(Material.ENDER_PEARL).build());
+                        player.getInventory().setItem(7, new ItemBuilder(Material.ENDER_PEARL).setDisplayname(PlayerHandler.enderpearl_name).build());
                         PlayerHandler.getPlayerUsedEP().remove(player.getUniqueId());
                     }
                     return;

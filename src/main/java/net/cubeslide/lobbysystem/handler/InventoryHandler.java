@@ -29,13 +29,8 @@ public class InventoryHandler implements Listener {
     public static final String skywarsffa_name = "§8[§5SkywarsFFA§8]";
     public static final String oneblock_name = "§8[§5MC-OneBlock§8]";
     public static CopyOnWriteArrayList<Player> hidden = new CopyOnWriteArrayList<>();
-    private static final HashMap<UUID, Integer> hasPlayerHiderCooldown = new HashMap<>();
-
+    private static HashMap<UUID, Integer> hasPlayerHiderCooldown = new HashMap<>();
     private static final HashMap<UUID, Long> clickcooldown = new HashMap<>();
-
-    public static HashMap<UUID, Integer> getHasPlayerHiderCooldown() {
-        return hasPlayerHiderCooldown;
-    }
 
     @EventHandler
     public void on(PlayerInteractEvent event) {
@@ -51,7 +46,6 @@ public class InventoryHandler implements Listener {
 
         if ((event.getAction() == Action.RIGHT_CLICK_BLOCK) || (event.getAction() == Action.RIGHT_CLICK_AIR)) {
             if ((currentItem.getType() == Material.COMPASS) && (Objects.requireNonNull(currentItem.getItemMeta()).getDisplayName().equals(PlayerHandler.navigator_name))) {
-
                 for (int i = 0; i < inventory.getSize(); i++) {
                     inventory.setItem(i, new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).setDisplayname("§8[§5§m---§8]").build());
                 }
@@ -61,11 +55,9 @@ public class InventoryHandler implements Listener {
 
                 player.openInventory(inventory);
                 player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1F, 1F);
-
-
             }
             if ((currentItem.getType() == Material.BLAZE_ROD) && (Objects.requireNonNull(currentItem.getItemMeta()).getDisplayName().equals(PlayerHandler.playerhider_name))) {
-                if (hasPlayerHiderCooldown.containsKey(player.getUniqueId())) {
+                if(hasPlayerHiderCooldown.containsKey(player.getUniqueId())){
                     player.sendMessage(LobbySystem.getPrefix() + "§cPlease slow down. You can use the PlayerHider in §4" + hasPlayerHiderCooldown.get(player.getUniqueId()) + " seconds§c.");
                     return;
                 }
@@ -91,6 +83,7 @@ public class InventoryHandler implements Listener {
             }
         }
     }
+
 
     @EventHandler
     public void on(InventoryClickEvent event) {
@@ -120,26 +113,31 @@ public class InventoryHandler implements Listener {
                                 final IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
                                 playerManager.getPlayerExecutor(Objects.requireNonNull(playerManager.getOnlinePlayer(player.getUniqueId()))).connect("SkywarsFFA-1"); //send a player to the target server if the player is login on a proxy
                             }
-
-                            if (!clickcooldown.containsKey(player.getUniqueId())) {
-                                clickcooldown.put(player.getUniqueId(), System.currentTimeMillis() + 2000);
-                            } else {
-                                if (System.currentTimeMillis() < clickcooldown.get(player.getUniqueId())) {
-                                    player.sendMessage(LobbySystem.getPrefix() + "§cPlease wait until you try to click again");
-                                    player.closeInventory();
-                                    return;
+                            if (event.getCurrentItem().getType() == Material.GRASS_BLOCK || event.getCurrentItem().getItemMeta().getDisplayName().equals(oneblock_name)) {
+                                if (!clickcooldown.containsKey(player.getUniqueId())) {
+                                    clickcooldown.put(player.getUniqueId(), System.currentTimeMillis() + 2000);
                                 } else {
-                                    clickcooldown.remove(player.getUniqueId());
+                                    if (System.currentTimeMillis() < clickcooldown.get(player.getUniqueId())) {
+                                        player.sendMessage(LobbySystem.getPrefix() + "§cPlease wait until you try to click again");
+                                        player.closeInventory();
+                                        return;
+                                    } else {
+                                        clickcooldown.remove(player.getUniqueId());
+                                    }
                                 }
+                                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
+                                final IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
+                                playerManager.getPlayerExecutor(Objects.requireNonNull(playerManager.getOnlinePlayer(player.getUniqueId()))).connect("MCOneBlock-1"); //send a player to the target server if the player is login on a proxy
                             }
-                            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
-                            final IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
-                            playerManager.getPlayerExecutor(Objects.requireNonNull(playerManager.getOnlinePlayer(player.getUniqueId()))).connect("MCOneBlock-1"); //send a player to the target server if the player is login on a proxy
                         }
                     }
                 }
             }
         }
+    }
+
+    public static HashMap<UUID, Integer> getHasPlayerHiderCooldown() {
+        return hasPlayerHiderCooldown;
     }
 }
 

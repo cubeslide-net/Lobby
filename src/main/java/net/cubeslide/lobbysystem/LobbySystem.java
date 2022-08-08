@@ -95,11 +95,23 @@ public final class LobbySystem extends JavaPlugin {
             for (FastBoard board : this.boards.values()) {
                 updateBoard(board);
             }
+
+            Bukkit.getOnlinePlayers().forEach(player -> {
+
+                final HashMap<UUID, Integer> player_cooldown_map = InventoryHandler.getHasPlayerHiderCooldown();
+                if (!player_cooldown_map.containsKey(player.getUniqueId())) return;
+
+                if (player_cooldown_map.get(player.getUniqueId()) < 1) {
+                    player_cooldown_map.remove(player.getUniqueId());
+                } else {
+                    player_cooldown_map.put(player.getUniqueId(), player_cooldown_map.get(player.getUniqueId()) - 1);
+                }
+            });
+
             Bukkit.getOnlinePlayers().forEach(player -> {
                 final HashMap<UUID, Integer> map = PlayerHandler.getPlayerUsedEP();
                 if (!map.containsKey(player.getUniqueId())) return;
-
-                if (map.get(player.getUniqueId()) <= 0) {
+                if (map.get(player.getUniqueId()) < 1) {
                     if (!player.getInventory().contains(new ItemBuilder(Material.ENDER_PEARL).build())) {
                         player.getInventory().setItem(7, new ItemBuilder(Material.ENDER_PEARL).build());
                         PlayerHandler.getPlayerUsedEP().remove(player.getUniqueId());

@@ -60,7 +60,7 @@ public class PlayerHandler implements Listener {
             hiders.hidePlayer(event.getPlayer());
         }
         FastBoard board = new FastBoard(player);
-        board.updateTitle(LobbySystem.getInstance().getConfig().getString("scoreboard.title").replace("&", "§"));
+        board.updateTitle(ChatColor.RED + "FastBoard");
         instance.getBoards().put(player.getUniqueId(), board);
     }
 

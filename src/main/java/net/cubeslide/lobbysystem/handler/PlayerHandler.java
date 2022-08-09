@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.weather.WeatherChangeEvent;
@@ -78,16 +79,21 @@ public class PlayerHandler implements Listener {
     @EventHandler
     public void on(PlayerInteractEvent event) {
         final Player player = event.getPlayer();
-        final UUID playerUUID = player.getUniqueId();
         if (player.getItemInHand().getType() == Material.ENDER_PEARL) {
             event.setCancelled(false);
             playerUsedEP.put(player.getUniqueId(), 30);
-            return;
         }
+    }
+
+    @EventHandler
+    public void onBreak(BlockBreakEvent event) {
+        final Player player = event.getPlayer();
+        final UUID playerUUID = player.getUniqueId();
         if (!BuildCMD.getInBuildMode().contains(playerUUID)) {
             event.setCancelled(true);
         }
     }
+
 
     @EventHandler
     public void on(PlayerDropItemEvent event) {

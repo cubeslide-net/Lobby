@@ -111,9 +111,10 @@ public final class LobbySystem extends JavaPlugin {
             Bukkit.getOnlinePlayers().forEach(player -> {
                 final HashMap<UUID, Integer> map = PlayerHandler.getPlayerUsedEP();
                 if (!map.containsKey(player.getUniqueId())) return;
+                final String enderpearl_name = "§8[§2Ender§aPearl§8]";
                 if (map.get(player.getUniqueId()) < 1) {
-                    if (!player.getInventory().contains(new ItemBuilder(Material.ENDER_PEARL).build())) {
-                        player.getInventory().setItem(7, new ItemBuilder(Material.ENDER_PEARL).setDisplayname(PlayerHandler.enderpearl_name).build());
+                    if (!player.getInventory().contains(new ItemBuilder(Material.ENDER_PEARL).setDisplayname(enderpearl_name).setLore("§7You can use this enderpearl. You will receive a new one in 30 seconds.").build())) {
+                        player.getInventory().setItem(7, new ItemBuilder(Material.ENDER_PEARL).setDisplayname(enderpearl_name).setLore("§7You can use this enderpearl. You will receive a new one in 30 seconds.").build());
                         PlayerHandler.getPlayerUsedEP().remove(player.getUniqueId());
                     }
                     return;
@@ -143,7 +144,6 @@ public final class LobbySystem extends JavaPlugin {
             tmp_list.add(line.replace("%rank%", permissionManagement.getHighestPermissionGroup(iPermissionUser).getName()).replace("%server%", iPlayerManager.getOnlinePlayer(player.getUniqueId()).getConnectedService().getServerName()).replace("%online%", String.valueOf(Bukkit.getOnlinePlayers().size())).replace("&", "§"));
         });
         board.updateLines(tmp_list);
-        board.updateTitle(getConfig().getString("scoreboard.title").replace("&", "§"));
     }
 
 

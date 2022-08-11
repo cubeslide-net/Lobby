@@ -26,8 +26,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class InventoryHandler implements Listener {
 
-    public static final String skywarsffa_name = "§8[§5SkywarsFFA§8]";
-    public static final String oneblock_name = "§8[§5MC-OneBlock§8]";
+    public static final String skywarsffa_name = "§8[§3Skywars§bFFA§8]";
+    public static final String oneblock_name = "§8[§3MC-§bOneBlock§8]";
+    public static final String buildffa_name = "§8[§3Build§bFFA§8]";
     public static CopyOnWriteArrayList<Player> hidden = new CopyOnWriteArrayList<>();
     private static HashMap<UUID, Integer> hasPlayerHiderCooldown = new HashMap<>();
     private static final HashMap<UUID, Long> clickcooldown = new HashMap<>();
@@ -50,8 +51,9 @@ public class InventoryHandler implements Listener {
                     inventory.setItem(i, new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).setDisplayname("§8[§5§m---§8]").build());
                 }
 
-                inventory.setItem(11, new ItemBuilder(Material.DIAMOND_SWORD).setDisplayname(skywarsffa_name).build());
-                inventory.setItem(15, new ItemBuilder(Material.GRASS_BLOCK).setDisplayname(oneblock_name).build());
+                inventory.setItem(10, new ItemBuilder(Material.DIAMOND_SWORD).setDisplayname(skywarsffa_name).build());
+                inventory.setItem(13, new ItemBuilder(Material.GRASS_BLOCK).setDisplayname(oneblock_name).build());
+                inventory.setItem(16, new ItemBuilder(Material.SANDSTONE).setDisplayname(buildffa_name).build());
 
                 player.openInventory(inventory);
                 player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1F, 1F);
@@ -97,37 +99,31 @@ public class InventoryHandler implements Listener {
                     if (player.getOpenInventory().getTitle().equals(PlayerHandler.navigator_name)) {
                         event.setCancelled(true);
                         if (event.getCurrentItem() != null) {
-                            if (event.getCurrentItem().getType() == Material.DIAMOND_SWORD || event.getCurrentItem().getItemMeta().getDisplayName().equals(skywarsffa_name)) {
-                                if (!clickcooldown.containsKey(player.getUniqueId())) {
-                                    clickcooldown.put(player.getUniqueId(), System.currentTimeMillis() + 2000);
+                            if (!clickcooldown.containsKey(player.getUniqueId())) {
+                                clickcooldown.put(player.getUniqueId(), System.currentTimeMillis() + 2000);
+                            } else {
+                                if (System.currentTimeMillis() < clickcooldown.get(player.getUniqueId())) {
+                                    player.sendMessage(LobbySystem.getPrefix() + "§cPlease wait until you try to click again");
+                                    player.closeInventory();
+                                    return;
                                 } else {
-                                    if (System.currentTimeMillis() < clickcooldown.get(player.getUniqueId())) {
-                                        player.sendMessage(LobbySystem.getPrefix() + "§cPlease wait until you try to click again");
-                                        player.closeInventory();
-                                        return;
-                                    } else {
-                                        clickcooldown.remove(player.getUniqueId());
-                                    }
+                                    clickcooldown.remove(player.getUniqueId());
                                 }
+                            }
+                            if (event.getCurrentItem().getType() == Material.DIAMOND_SWORD || event.getCurrentItem().getItemMeta().getDisplayName().equals(skywarsffa_name)) {
                                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
                                 final IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
                                 playerManager.getPlayerExecutor(Objects.requireNonNull(playerManager.getOnlinePlayer(player.getUniqueId()))).connect("SkywarsFFA-1"); //send a player to the target server if the player is login on a proxy
                             }
                             if (event.getCurrentItem().getType() == Material.GRASS_BLOCK || event.getCurrentItem().getItemMeta().getDisplayName().equals(oneblock_name)) {
-                                if (!clickcooldown.containsKey(player.getUniqueId())) {
-                                    clickcooldown.put(player.getUniqueId(), System.currentTimeMillis() + 2000);
-                                } else {
-                                    if (System.currentTimeMillis() < clickcooldown.get(player.getUniqueId())) {
-                                        player.sendMessage(LobbySystem.getPrefix() + "§cPlease wait until you try to click again");
-                                        player.closeInventory();
-                                        return;
-                                    } else {
-                                        clickcooldown.remove(player.getUniqueId());
-                                    }
-                                }
                                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
                                 final IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
                                 playerManager.getPlayerExecutor(Objects.requireNonNull(playerManager.getOnlinePlayer(player.getUniqueId()))).connect("MCOneBlock-1"); //send a player to the target server if the player is login on a proxy
+                            }
+                            if (event.getCurrentItem().getType() == Material.SANDSTONE || event.getCurrentItem().getItemMeta().getDisplayName().equals(buildffa_name)) {
+                                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
+                                final IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
+                                playerManager.getPlayerExecutor(Objects.requireNonNull(playerManager.getOnlinePlayer(player.getUniqueId()))).connect("BuildFFA-1"); //send a player to the target server if the player is login on a proxy
                             }
                         }
                     }

@@ -1,5 +1,6 @@
 package net.cubeslide.lobbysystem.commands;
 
+import java.util.UUID;
 import net.cubeslide.lobbysystem.LobbySystem;
 import net.cubeslide.lobbysystem.handler.CheckpointHandler;
 import org.bukkit.Location;
@@ -24,11 +25,11 @@ public class CheckpointCMD implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (sender instanceof Player) {
-            Player player = (Player) sender;
-
+            final Player player = (Player) sender;
+            final UUID playerUUID = player.getUniqueId();
             if (args.length == 1) {
                 if (args[0].equalsIgnoreCase("remove")) {
-                    CheckpointHandler.getCurrentCheckpoint().put(player, null);
+                    CheckpointHandler.getCurrentCheckpoint().put(playerUUID, null);
                     player.sendMessage(LobbySystem.getPrefix() + "You removed your checkpoint.");
                     player.teleport((Location) LobbySystem.getInstance().getConfig().get("spawn"));
                     return true;

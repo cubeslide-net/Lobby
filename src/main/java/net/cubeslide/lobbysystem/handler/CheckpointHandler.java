@@ -1,5 +1,6 @@
 package net.cubeslide.lobbysystem.handler;
 
+import java.util.UUID;
 import net.cubeslide.lobbysystem.LobbySystem;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -18,10 +19,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class CheckpointHandler implements Listener {
 
     private static final CopyOnWriteArrayList<Player> cooldown = new CopyOnWriteArrayList<>();
-    private static final HashMap<Player, Location> currentCheckpoint = new HashMap<>();
+    private static final HashMap<UUID, Location> currentCheckpoint = new HashMap<>();
     final File file = LobbySystem.getCheckpointFile();
 
-    public static HashMap<Player, Location> getCurrentCheckpoint() {
+    public static HashMap<UUID, Location> getCurrentCheckpoint() {
         return currentCheckpoint;
     }
 
@@ -58,7 +59,8 @@ public class CheckpointHandler implements Listener {
                     player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
                 }
 
-                currentCheckpoint.put(player,
+                final UUID playerUUID = player.getUniqueId();
+                currentCheckpoint.put(playerUUID,
                         new Location(player.getWorld(), Math.round(player.getLocation().getX()),
                                 Math.round(player.getLocation().getY()), Math.round(player.getLocation().getZ())));
                 player.sendMessage(LobbySystem.getPrefix() + "You have reached a checkpoint.");

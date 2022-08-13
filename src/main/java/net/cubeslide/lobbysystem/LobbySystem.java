@@ -140,10 +140,16 @@ public final class LobbySystem extends JavaPlugin {
 
 
         tmp_list.clear();
+        final String online = String.valueOf(iPlayerManager.getOnlineCount());
         getConfig().getStringList("scoreboard.content").forEach(line -> {
-            tmp_list.add(line.replace("%rank%", permissionManagement.getHighestPermissionGroup(iPermissionUser).getName()).replace("%server%", iPlayerManager.getOnlinePlayer(player.getUniqueId()).getConnectedService().getServerName()).replace("%online%", String.valueOf(iPlayerManager.getOnlineCount())).replace("&", "§"));
+            tmp_list.add(line.replace("%rank%", permissionManagement.getHighestPermissionGroup(iPermissionUser).getName()).replace("%server%", iPlayerManager.getOnlinePlayer(player.getUniqueId()).getConnectedService().getServerName()).replace("%online%", online).replace("&", "§"));
         });
         board.updateLines(tmp_list);
+
+        Bukkit.getOnlinePlayers().forEach(players -> {
+            players.setExp(0);
+            players.setLevel(Integer.valueOf(online));
+        });
     }
 
 

@@ -29,7 +29,7 @@ public class CheckpointHandler implements Listener {
     @EventHandler
     public void on(PlayerMoveEvent event) {
         final Player player = event.getPlayer();
-
+        final UUID playerUUID = player.getUniqueId();
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         ArrayList<Location> checkpoints = (ArrayList<Location>) config.getList("locations");
         if (checkpoints == null) {
@@ -43,10 +43,10 @@ public class CheckpointHandler implements Listener {
             if ((loc.getX() == playerLocation.getX()) && (loc.getY() == playerLocation.getY()) && (
                     loc.getZ() == playerLocation.getZ())) {
 
-                if (currentCheckpoint.get(player) != null) {
-                    if ((loc.getX() == currentCheckpoint.get(player).getX()) && (loc.getY()
-                            == currentCheckpoint.get(player).getY()) && (loc.getZ() == currentCheckpoint.get(
-                            player).getZ())) {
+                if (currentCheckpoint.get(playerUUID) != null) {
+                    if ((loc.getX() == currentCheckpoint.get(playerUUID).getX()) && (loc.getY()
+                            == currentCheckpoint.get(playerUUID).getY()) && (loc.getZ() == currentCheckpoint.get(
+                        playerUUID).getZ())) {
                         return;
                     }
 
@@ -59,7 +59,6 @@ public class CheckpointHandler implements Listener {
                     player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
                 }
 
-                final UUID playerUUID = player.getUniqueId();
                 currentCheckpoint.put(playerUUID,
                         new Location(player.getWorld(), Math.round(player.getLocation().getX()),
                                 Math.round(player.getLocation().getY()), Math.round(player.getLocation().getZ())));

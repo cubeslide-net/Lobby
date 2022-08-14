@@ -14,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -32,6 +33,17 @@ public class InventoryHandler implements Listener {
     public static CopyOnWriteArrayList<Player> hidden = new CopyOnWriteArrayList<>();
     private static HashMap<UUID, Integer> hasPlayerHiderCooldown = new HashMap<>();
     private static final HashMap<UUID, Long> clickcooldown = new HashMap<>();
+
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        final Player player = event.getPlayer();
+        final UUID uuid = player.getUniqueId();
+
+        if(clickcooldown.containsKey(uuid)) {
+            clickcooldown.remove(uuid);
+        }
+    }
 
     @EventHandler
     public void on(PlayerInteractEvent event) {
@@ -98,11 +110,14 @@ public class InventoryHandler implements Listener {
                 if (player.getOpenInventory().getTitle() != null) {
                     if (player.getOpenInventory().getTitle().equals(PlayerHandler.navigator_name)) {
                         event.setCancelled(true);
+
+                        if(event.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE) return;
+
                         if (event.getCurrentItem() != null) {
                             if (!clickcooldown.containsKey(player.getUniqueId())) {
-                                clickcooldown.put(player.getUniqueId(), System.currentTimeMillis() + 2000);
+                                clickcooldown.put(player.getUniqueId(), System.currentTimeMillis());
                             } else {
-                                if (System.currentTimeMillis() < clickcooldown.get(player.getUniqueId())) {
+                                if (System.currentTimeMillis() - clickcooldown.get(player.getUniqueId()) < 2000) {
                                     player.sendMessage(LobbySystem.getPrefix() + "§cPlease wait until you try to click again");
                                     player.closeInventory();
                                     return;

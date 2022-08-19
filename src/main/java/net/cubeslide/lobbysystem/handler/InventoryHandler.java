@@ -30,7 +30,7 @@ public class InventoryHandler implements Listener {
     public static final String skywarsffa_name = "§8[§3Skywars§bFFA§8]";
     public static final String oneblock_name = "§8[§3MC-§bOneBlock§8]";
     public static final String buildffa_name = "§8[§3Build§bFFA§8]";
-    public static CopyOnWriteArrayList<Player> hidden = new CopyOnWriteArrayList<>();
+    public static CopyOnWriteArrayList<UUID> hidden = new CopyOnWriteArrayList<>();
     private static HashMap<UUID, Integer> hasPlayerHiderCooldown = new HashMap<>();
     private static final HashMap<UUID, Long> clickcooldown = new HashMap<>();
 
@@ -75,10 +75,10 @@ public class InventoryHandler implements Listener {
                     player.sendMessage(LobbySystem.getPrefix() + "§cPlease slow down. You can use the PlayerHider in §4" + hasPlayerHiderCooldown.get(player.getUniqueId()) + " seconds§c.");
                     return;
                 }
-                if (hidden.contains(player)) {
+                if (hidden.contains(player.getUniqueId())) {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (20), 10));
                     player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1F, 1F);
-                    hidden.remove(player);
+                    hidden.remove(player.getUniqueId());
                     for (Player all : Bukkit.getOnlinePlayers()) {
                         player.showPlayer(all);
                     }
@@ -87,7 +87,7 @@ public class InventoryHandler implements Listener {
                 } else {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (20), 10));
                     player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1F, 1F);
-                    hidden.add(player);
+                    hidden.add(player.getUniqueId());
                     for (Player all : Bukkit.getOnlinePlayers()) {
                         player.hidePlayer(all);
                     }

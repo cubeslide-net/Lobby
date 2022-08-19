@@ -1,5 +1,6 @@
 package net.cubeslide.lobbysystem.utils;
 
+import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -28,8 +29,8 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setLore(String... s) {
-        itemMeta.setLore(Arrays.asList(s));
+    public ItemBuilder setLore(List<String> s) {
+        itemMeta.setLore(s);
         return this;
     }
 

@@ -12,6 +12,8 @@ import net.cubeslide.lobbysystem.handler.CheckpointHandler;
 import net.cubeslide.lobbysystem.handler.InventoryHandler;
 import net.cubeslide.lobbysystem.handler.PlayerHandler;
 import net.cubeslide.lobbysystem.utils.ItemBuilder;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -113,11 +115,10 @@ public final class LobbySystem extends JavaPlugin {
                 if (!map.containsKey(player.getUniqueId())) return;
                 final String enderpearl_name = "§8[§2Ender§aPearl§8]";
                 if (map.get(player.getUniqueId()) < 1) {
-                    if (!player.getInventory().contains(new ItemBuilder(Material.ENDER_PEARL).setDisplayname(enderpearl_name).setLore("§7You can use this enderpearl. You will receive a new one in 30 seconds.").build())) {
-                        player.getInventory().setItem(7, new ItemBuilder(Material.ENDER_PEARL).setDisplayname(enderpearl_name).setLore("§7You can use this enderpearl. You will receive a new one in 30 seconds.").build());
+                    if (!player.getInventory().contains(new ItemBuilder(Material.ENDER_PEARL).setDisplayname(enderpearl_name).setLore(Arrays.asList("§7You can use this enderpearl.","§7You will receive a new one in 30 seconds.")).build())) {
+                        player.getInventory().setItem(7, new ItemBuilder(Material.ENDER_PEARL).setDisplayname(enderpearl_name).setLore(Arrays.asList("§7You can use this enderpearl.","§7You will receive a new one in 30 seconds.")).build());
                         PlayerHandler.getPlayerUsedEP().remove(player.getUniqueId());
                     }
-                    return;
                 } else {
                     map.put(player.getUniqueId(), map.get(player.getUniqueId()) - 1);
                 }
@@ -145,6 +146,10 @@ public final class LobbySystem extends JavaPlugin {
             tmp_list.add(line.replace("%rank%", permissionManagement.getHighestPermissionGroup(iPermissionUser).getName()).replace("%server%", iPlayerManager.getOnlinePlayer(player.getUniqueId()).getConnectedService().getServerName()).replace("%online%", online).replace("&", "§"));
         });
         board.updateLines(tmp_list);
+
+        if(PlayerHandler.inSilentHubList.contains(player.getUniqueId())) {
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(getPrefix() + "§aYou are currently at the SilentHub!"));
+        }
 
         Bukkit.getOnlinePlayers().forEach(players -> {
             players.setExp(0);

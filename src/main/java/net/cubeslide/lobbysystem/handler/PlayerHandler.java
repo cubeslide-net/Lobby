@@ -143,12 +143,14 @@ public class PlayerHandler implements Listener {
           inSilentHubList.remove(uuid);
           for(Player all : Bukkit.getOnlinePlayers()) {
             all.showPlayer(player);
+            player.showPlayer(all);
           }
           player.sendMessage(LobbySystem.getPrefix() + "§cYou are no longer in the Silenthub!");
         } else {
           inSilentHubList.add(uuid);
           for(Player all : Bukkit.getOnlinePlayers()) {
             all.hidePlayer(player);
+            player.hidePlayer(all);
           }
           player.sendMessage(LobbySystem.getPrefix() + "§aYou are now in the Silenthub!");
         }

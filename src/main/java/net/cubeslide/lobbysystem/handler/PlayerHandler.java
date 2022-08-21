@@ -81,7 +81,7 @@ public class PlayerHandler implements Listener {
         hiders.hidePlayer(event.getPlayer());
       }
 
-      if(inSilentHubList.contains(hiders) ) {
+      if(inSilentHubList.contains(hiders.getUniqueId()) ) {
         hiders.hidePlayer(player);
         player.hidePlayer(hiders);
       }

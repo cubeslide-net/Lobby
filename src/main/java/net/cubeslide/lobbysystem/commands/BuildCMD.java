@@ -21,27 +21,26 @@ public class BuildCMD implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
-                             @NotNull String label, @NotNull String[] args) {
-        if (sender instanceof Player) {
-            final Player player = (Player) sender;
-            if (player.hasPermission("LobbySystem.build") || player.hasPermission("LobbySystem.admin")) {
-                final UUID playerUUID = player.getUniqueId();
-                if (inBuildMode.contains(playerUUID)) {
-                    inBuildMode.remove(playerUUID);
-                    player.sendMessage(LobbySystem.getPrefix() + "You left the §3BuildMode§7.");
-                    player.setGameMode(GameMode.SURVIVAL);
-                    PlayerHandler.setInventory(player);
-                } else {
-                    inBuildMode.add(playerUUID);
-                    player.sendMessage(LobbySystem.getPrefix() + "You entered the §3BuildMode§7.");
-                    player.setGameMode(GameMode.CREATIVE);
-                }
-            } else {
-                player.sendMessage(LobbySystem.getPrefix() + LobbySystem.getNoPermission());
-            }
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(LobbySystem.getNoPlayer());
+            return true;
+        }
+        final Player player = (Player) sender;
+        if (!player.hasPermission("LobbySystem.build") || !player.hasPermission("LobbySystem.admin")) {
+            player.sendMessage(LobbySystem.getNoPermission());
+            return true;
+        }
+        final UUID playerUUID = player.getUniqueId();
+        if (inBuildMode.contains(playerUUID)) {
+            inBuildMode.remove(playerUUID);
+            player.sendMessage(LobbySystem.getPrefix() + "You left the §3BuildMode§7.");
+            player.setGameMode(GameMode.SURVIVAL);
+            PlayerHandler.setInventory(player);
         } else {
-            sender.sendMessage(LobbySystem.getPrefix() + LobbySystem.getNoPlayer());
+            inBuildMode.add(playerUUID);
+            player.sendMessage(LobbySystem.getPrefix() + "You entered the §3BuildMode§7.");
+            player.setGameMode(GameMode.CREATIVE);
         }
         return false;
     }

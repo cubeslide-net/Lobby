@@ -40,7 +40,7 @@ public class InventoryHandler implements Listener {
         final Player player = event.getPlayer();
         final UUID uuid = player.getUniqueId();
 
-        if(clickcooldown.containsKey(uuid)) {
+        if (clickcooldown.containsKey(uuid)) {
             clickcooldown.remove(uuid);
         }
     }
@@ -71,7 +71,7 @@ public class InventoryHandler implements Listener {
                 player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1F, 1F);
             }
             if ((currentItem.getType() == Material.BLAZE_ROD) && (Objects.requireNonNull(currentItem.getItemMeta()).getDisplayName().equals(PlayerHandler.playerhider_name))) {
-                if(hasPlayerHiderCooldown.containsKey(player.getUniqueId())){
+                if (hasPlayerHiderCooldown.containsKey(player.getUniqueId())) {
                     player.sendMessage(LobbySystem.getPrefix() + "§cPlease slow down. You can use the PlayerHider in §4" + hasPlayerHiderCooldown.get(player.getUniqueId()) + " seconds§c.");
                     return;
                 }
@@ -111,7 +111,7 @@ public class InventoryHandler implements Listener {
                     if (player.getOpenInventory().getTitle().equals(PlayerHandler.navigator_name)) {
                         event.setCancelled(true);
 
-                        if(event.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE) return;
+                        if (event.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE) return;
 
                         if (event.getCurrentItem() != null) {
                             if (!clickcooldown.containsKey(player.getUniqueId())) {

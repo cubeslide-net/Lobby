@@ -92,31 +92,27 @@ public final class LobbySystem extends JavaPlugin {
         Objects.requireNonNull(getCommand("build")).setExecutor(new BuildCMD());
         Objects.requireNonNull(getCommand("checkpoint")).setExecutor(new CheckpointCMD());
 
-
         getServer().getScheduler().runTaskTimer(this, () -> {
             for (FastBoard board : this.boards.values()) {
                 updateBoard(board);
             }
 
             Bukkit.getOnlinePlayers().forEach(player -> {
-
                 final HashMap<UUID, Integer> player_cooldown_map = InventoryHandler.getHasPlayerHiderCooldown();
                 if (!player_cooldown_map.containsKey(player.getUniqueId())) return;
-
                 if (player_cooldown_map.get(player.getUniqueId()) < 1) {
                     player_cooldown_map.remove(player.getUniqueId());
                 } else {
                     player_cooldown_map.put(player.getUniqueId(), player_cooldown_map.get(player.getUniqueId()) - 1);
                 }
             });
-
             Bukkit.getOnlinePlayers().forEach(player -> {
                 final HashMap<UUID, Integer> map = PlayerHandler.getPlayerUsedEP();
                 if (!map.containsKey(player.getUniqueId())) return;
                 final String enderpearl_name = "§8[§2Ender§aPearl§8]";
                 if (map.get(player.getUniqueId()) < 1) {
-                    if (!player.getInventory().contains(new ItemBuilder(Material.ENDER_PEARL).setDisplayname(enderpearl_name).setLore(Arrays.asList("§7You can use this enderpearl.","§7You will receive a new one in 30 seconds.")).build())) {
-                        player.getInventory().setItem(7, new ItemBuilder(Material.ENDER_PEARL).setDisplayname(enderpearl_name).setLore(Arrays.asList("§7You can use this enderpearl.","§7You will receive a new one in 30 seconds.")).build());
+                    if (!player.getInventory().contains(new ItemBuilder(Material.ENDER_PEARL).setDisplayname(enderpearl_name).setLore(Arrays.asList("§7You can use this enderpearl.", "§7You will receive a new one in 30 seconds.")).build())) {
+                        player.getInventory().setItem(7, new ItemBuilder(Material.ENDER_PEARL).setDisplayname(enderpearl_name).setLore(Arrays.asList("§7You can use this enderpearl.", "§7You will receive a new one in 30 seconds.")).build());
                         PlayerHandler.getPlayerUsedEP().remove(player.getUniqueId());
                     }
                 } else {
@@ -124,7 +120,6 @@ public final class LobbySystem extends JavaPlugin {
                 }
             });
         }, 0, 20);
-
     }
 
     @Override
@@ -139,7 +134,6 @@ public final class LobbySystem extends JavaPlugin {
         final IPermissionUser iPermissionUser = cloudNetDriver.getPermissionManagement().getUser(player.getUniqueId());
         final IPermissionManagement permissionManagement = cloudNetDriver.getPermissionManagement();
 
-
         tmp_list.clear();
         final String online = String.valueOf(iPlayerManager.getOnlineCount());
         getConfig().getStringList("scoreboard.content").forEach(line -> {
@@ -147,7 +141,7 @@ public final class LobbySystem extends JavaPlugin {
         });
         board.updateLines(tmp_list);
 
-        if(PlayerHandler.inSilentHubList.contains(player.getUniqueId())) {
+        if (PlayerHandler.inSilentHubList.contains(player.getUniqueId())) {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(getPrefix() + "§aYou are currently in the SilentHub!"));
         }
 
@@ -156,7 +150,6 @@ public final class LobbySystem extends JavaPlugin {
             players.setLevel(Integer.valueOf(online));
         });
     }
-
 
     public Map<UUID, FastBoard> getBoards() {
         return boards;

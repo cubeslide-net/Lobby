@@ -159,8 +159,10 @@ public class PlayerHandler implements Listener {
             if (inSilentHubList.contains(uuid)) {
                 inSilentHubList.remove(uuid);
                 for (Player all : Bukkit.getOnlinePlayers()) {
-                    all.showPlayer(player);
-                    player.showPlayer(all);
+                   if(!inSilentHubList.contains(all.getUniqueId())) {
+                       all.showPlayer(player);
+                       player.showPlayer(all);
+                   }
                 }
                 player.sendMessage(LobbySystem.getPrefix() + "§cYou are no longer in the Silenthub!");
             } else {

@@ -1,8 +1,8 @@
 name: LobbySystem
 version: '${project.version}'
 main: net.cubeslide.lobbysystem.LobbySystem
-api-version: 1.16
-
+api-version: 1.19
+depend: [CloudNet-Bridge]
 commands:
   spawn:
   build:

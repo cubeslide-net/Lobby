@@ -48,10 +48,7 @@ public class PlayerHandler implements Listener {
         playerInv.clear();
         playerInv.setItem(1,
                 new ItemBuilder(Material.BLAZE_ROD).setDisplayname(playerhider_name).build());
-
-        if (player.hasPermission("cubeslide.silenthub")) {
-            playerInv.setItem(3, new ItemBuilder(Material.TNT).setDisplayname(silenthub_name).build());
-        }
+        playerInv.setItem(3, new ItemBuilder(Material.TNT).setDisplayname(silenthub_name).build());
 
         playerInv.setItem(4, new ItemBuilder(Material.COMPASS).setDisplayname(navigator_name).build());
 

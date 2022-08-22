@@ -148,7 +148,7 @@ public final class LobbySystem extends JavaPlugin {
         board.updateLines(tmp_list);
 
         if(PlayerHandler.inSilentHubList.contains(player.getUniqueId())) {
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(getPrefix() + "§aYou are currently at the SilentHub!"));
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(getPrefix() + "§aYou are currently in the SilentHub!"));
         }
 
         Bukkit.getOnlinePlayers().forEach(players -> {

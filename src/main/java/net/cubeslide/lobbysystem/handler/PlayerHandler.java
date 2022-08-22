@@ -63,6 +63,8 @@ public class PlayerHandler implements Listener {
   }
   public static final LinkedList<UUID> inSilentHubList = new LinkedList<>();
 
+  private final HashMap<UUID, Long> lastSilentHubUse = new HashMap<>();
+
   @EventHandler
   public void on(PlayerJoinEvent event) {
     final LobbySystem instance = LobbySystem.getInstance();
@@ -75,7 +77,8 @@ public class PlayerHandler implements Listener {
       player.sendMessage(prefix + "§cSpawn Error: §7Please contact a team member.");
     }
     setInventory(player);
-
+    player.setWalkSpeed(0.3F);
+    player.setMaxHealth(6D);
     for (Player hiders : Bukkit.getOnlinePlayers()) {
       if(InventoryHandler.hidden.contains(hiders.getUniqueId())) {
         hiders.hidePlayer(event.getPlayer());
@@ -137,7 +140,21 @@ public class PlayerHandler implements Listener {
 
 
     final UUID uuid = player.getUniqueId();
-    if(player.hasPermission("cubeslide.silenthub") && player.getItemInHand().getType() == Material.TNT) {
+    if(player.getItemInHand().getType() == Material.TNT) {
+
+        if(!lastSilentHubUse.containsKey(uuid)) {
+          lastSilentHubUse.put(uuid, System.currentTimeMillis());
+        } else {
+
+          if(System.currentTimeMillis() - lastSilentHubUse.get(uuid) < 5000) {
+            player.sendMessage(LobbySystem.getPrefix() + "§cPlease wait before using this Item again!");
+            event.setCancelled(true);
+            return;
+          }
+
+          lastSilentHubUse.put(uuid, System.currentTimeMillis());
+        }
+
         event.setCancelled(true);
         if(inSilentHubList.contains(uuid)) {
           inSilentHubList.remove(uuid);

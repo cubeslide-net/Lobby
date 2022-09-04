@@ -84,7 +84,7 @@ public class PlayerHandler implements Listener {
                 hiders.hidePlayer(event.getPlayer());
             }
 
-            if (inSilentHubList.contains(hiders.getUniqueId())) {
+            if (inSilentHubList.contains(hiders.getUniqueId()) ||inSilentHubList.contains(player.getUniqueId())) {
                 hiders.hidePlayer(player);
                 player.hidePlayer(hiders);
             }
@@ -159,7 +159,7 @@ public class PlayerHandler implements Listener {
             if (inSilentHubList.contains(uuid)) {
                 inSilentHubList.remove(uuid);
                 for (Player all : Bukkit.getOnlinePlayers()) {
-                   if(!inSilentHubList.contains(all.getUniqueId())) {
+                   if(!inSilentHubList.contains(all.getUniqueId()) && !inSilentHubList.contains(player.getUniqueId())) {
                        all.showPlayer(player);
                        player.showPlayer(all);
                    }

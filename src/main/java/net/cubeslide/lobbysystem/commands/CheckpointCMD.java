@@ -1,8 +1,5 @@
 package net.cubeslide.lobbysystem.commands;
 
-import java.util.Objects;
-import java.util.UUID;
-
 import net.cubeslide.lobbysystem.LobbySystem;
 import net.cubeslide.lobbysystem.handler.CheckpointHandler;
 import org.bukkit.Location;
@@ -17,6 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.UUID;
 
 public class CheckpointCMD implements CommandExecutor {
 
@@ -30,6 +29,12 @@ public class CheckpointCMD implements CommandExecutor {
         }
         final Player player = (Player) sender;
         final UUID playerUUID = player.getUniqueId();
+
+        if (!player.hasPermission("LobbySystem.admin")) {
+            player.sendMessage(LobbySystem.getNoPermission());
+            return true;
+        }
+
         if (args.length == 1) {
             if (args[0].equalsIgnoreCase("remove")) {
                 CheckpointHandler.getCurrentCheckpoint().put(playerUUID, null);
@@ -38,10 +43,6 @@ public class CheckpointCMD implements CommandExecutor {
                 return true;
             } else {
                 player.sendMessage(LobbySystem.getPrefix() + LobbySystem.getPrefixUse() + "checkpoint remove");
-            }
-            if (!player.hasPermission("LobbySystem.admin")) {
-                player.sendMessage(LobbySystem.getNoPermission());
-                return true;
             }
             if (args[0].equalsIgnoreCase("list")) {
                 FileConfiguration config = YamlConfiguration.loadConfiguration(file);

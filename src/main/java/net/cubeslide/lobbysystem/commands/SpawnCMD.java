@@ -33,8 +33,6 @@ public class SpawnCMD implements CommandExecutor {
                     instance.getConfig().set("spawn", null);
                     instance.saveConfig();
                     player.sendMessage(prefix + "§7Spawn deleted.");
-                } else {
-                    player.sendMessage(prefix + "§cneee");
                 }
             } else {
                 player.sendMessage(prefix + LobbySystem.getPrefixUse() + "spawn (set/delete)");
@@ -42,8 +40,6 @@ public class SpawnCMD implements CommandExecutor {
         } else {
             if (instance.getConfig().get("spawn") != null) {
                 player.teleport((Location) Objects.requireNonNull(instance.getConfig().get("spawn")));
-            } else {
-                player.sendMessage(prefix + "§cError: §7Please contact a team member.");
             }
         }
         return false;

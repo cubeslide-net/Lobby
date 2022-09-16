@@ -1,12 +1,11 @@
 package net.cubeslide.lobbysystem.utils;
 
-import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
+import java.util.List;
 
 public class ItemBuilder {
 
@@ -24,26 +23,10 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setLocalizedName(String s) {
-        itemMeta.setLocalizedName(s);
-        return this;
-    }
-
     public ItemBuilder setLore(List<String> s) {
         itemMeta.setLore(s);
         return this;
     }
-
-    public ItemBuilder setUnbreakable(boolean s) {
-        itemMeta.setUnbreakable(s);
-        return this;
-    }
-
-    public ItemBuilder addItemFlags(ItemFlag... s) {
-        itemMeta.addItemFlags(s);
-        return this;
-    }
-
     @Override
     public String toString() {
         return "ItemBuilder{" + "itemMeta=" + itemMeta + ", itemStack=" + itemStack + '}';

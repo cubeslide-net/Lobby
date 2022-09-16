@@ -1,13 +1,6 @@
 package net.cubeslide.lobbysystem.handler;
 
 import fr.mrmicky.fastboard.FastBoard;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Objects;
-import java.util.UUID;
-
 import net.cubeslide.lobbysystem.LobbySystem;
 import net.cubeslide.lobbysystem.commands.BuildCMD;
 import net.cubeslide.lobbysystem.utils.ItemBuilder;
@@ -20,25 +13,21 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.inventory.Inventory;
+
+import java.util.*;
 
 public class PlayerHandler implements Listener {
 
 
     public static final String navigator_name = "§8[§dNavigator§8]";
     public static final String playerhider_name = "§8[§3Player§bHider§8]";
-    public static final String enderpearl_name = "§8[§2Ender§aPearl§8]";
+    private static final String enderpearl_name = "§8[§2Ender§aPearl§8]";
 
-    public static final String silenthub_name = "§8[§6§lSilentHub§r§8]";
+    private static final String silenthub_name = "§8[§6§lSilentHub§r§8]";
     private static final HashMap<UUID, Integer> playerUsedEP = new HashMap<>();
 
     final LobbySystem instance = LobbySystem.getInstance();
@@ -72,7 +61,7 @@ public class PlayerHandler implements Listener {
         final String prefix = LobbySystem.getPrefix();
         event.setJoinMessage(null);
         if (instance.getConfig().get("spawn") != null) {
-            player.teleport((Location) instance.getConfig().get("spawn"));
+            player.teleport((Location) Objects.requireNonNull(instance.getConfig().get("spawn")));
         } else {
             player.sendMessage(prefix + "§cSpawn Error: §7Please contact a team member.");
         }
@@ -84,7 +73,7 @@ public class PlayerHandler implements Listener {
                 hiders.hidePlayer(event.getPlayer());
             }
 
-            if (inSilentHubList.contains(hiders.getUniqueId()) ||inSilentHubList.contains(player.getUniqueId())) {
+            if (inSilentHubList.contains(hiders.getUniqueId()) || inSilentHubList.contains(player.getUniqueId())) {
                 hiders.hidePlayer(player);
                 player.hidePlayer(hiders);
             }
@@ -92,7 +81,7 @@ public class PlayerHandler implements Listener {
 
         FastBoard board = new FastBoard(player);
         board.updateTitle(
-                LobbySystem.getInstance().getConfig().getString("scoreboard.title").replace("&", "§"));
+                Objects.requireNonNull(LobbySystem.getInstance().getConfig().getString("scoreboard.title")).replace("&", "§"));
         instance.getBoards().put(player.getUniqueId(), board);
     }
 
@@ -118,12 +107,7 @@ public class PlayerHandler implements Listener {
             event.setCancelled(true);
         }
 
-        for (Player all : event.getRecipients()) {
-
-            if (inSilentHubList.contains(all.getUniqueId())) {
-                event.getRecipients().remove(all);
-            }
-        }
+        event.getRecipients().removeIf(all -> inSilentHubList.contains(all.getUniqueId()));
 
     }
 
@@ -159,10 +143,10 @@ public class PlayerHandler implements Listener {
             if (inSilentHubList.contains(uuid)) {
                 inSilentHubList.remove(uuid);
                 for (Player all : Bukkit.getOnlinePlayers()) {
-                   if(!inSilentHubList.contains(all.getUniqueId()) && !inSilentHubList.contains(player.getUniqueId())) {
-                       all.showPlayer(player);
-                       player.showPlayer(all);
-                   }
+                    if (!inSilentHubList.contains(all.getUniqueId()) && !inSilentHubList.contains(player.getUniqueId())) {
+                        all.showPlayer(player);
+                        player.showPlayer(all);
+                    }
                 }
                 player.sendMessage(LobbySystem.getPrefix() + "§cYou are no longer in the Silenthub!");
             } else {

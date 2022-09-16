@@ -7,7 +7,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -37,11 +36,12 @@ public class BuildCMD implements CommandExecutor {
             player.sendMessage(LobbySystem.getPrefix() + "You left the §3BuildMode§7.");
             player.setGameMode(GameMode.SURVIVAL);
             PlayerHandler.setInventory(player);
+            return true;
         } else {
             inBuildMode.add(playerUUID);
             player.sendMessage(LobbySystem.getPrefix() + "You entered the §3BuildMode§7.");
             player.setGameMode(GameMode.CREATIVE);
+            return true;
         }
-        return false;
     }
 }

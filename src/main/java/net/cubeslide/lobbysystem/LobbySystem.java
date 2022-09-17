@@ -111,8 +111,8 @@ public final class LobbySystem extends JavaPlugin {
                 if (!map.containsKey(player.getUniqueId())) return;
                 final String enderpearl_name = "§8[§2Ender§aPearl§8]";
                 if (map.get(player.getUniqueId()) < 1) {
-                    if (!player.getInventory().contains(new ItemBuilder(Material.ENDER_PEARL).setDisplayname(enderpearl_name).setLore(Arrays.asList("§7You can use this enderpearl.", "§7You will receive a new one in 30 seconds.")).build())) {
-                        player.getInventory().setItem(7, new ItemBuilder(Material.ENDER_PEARL).setDisplayname(enderpearl_name).setLore(Arrays.asList("§7You can use this enderpearl.", "§7You will receive a new one in 30 seconds.")).build());
+                    if (!player.getInventory().contains(new ItemBuilder(Material.ENDER_PEARL,1 ).setDisplayname(enderpearl_name).setLore(Arrays.asList("§7You can use this enderpearl.", "§7You will receive a new one in 30 seconds.")).build())) {
+                        player.getInventory().setItem(7, new ItemBuilder(Material.ENDER_PEARL,1 ).setDisplayname(enderpearl_name).setLore(Arrays.asList("§7You can use this enderpearl.", "§7You will receive a new one in 30 seconds.")).build());
                         PlayerHandler.getPlayerUsedEP().remove(player.getUniqueId());
                     }
                 } else {

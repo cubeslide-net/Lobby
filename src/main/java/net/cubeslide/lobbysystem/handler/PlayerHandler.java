@@ -36,12 +36,12 @@ public class PlayerHandler implements Listener {
         final Inventory playerInv = player.getInventory();
         playerInv.clear();
         playerInv.setItem(1,
-                new ItemBuilder(Material.BLAZE_ROD).setDisplayname(playerhider_name).build());
-        playerInv.setItem(3, new ItemBuilder(Material.TNT).setDisplayname(silenthub_name).build());
+                new ItemBuilder(Material.BLAZE_ROD,1).setDisplayname(playerhider_name).build());
+        playerInv.setItem(3, new ItemBuilder(Material.TNT,1).setDisplayname(silenthub_name).build());
 
-        playerInv.setItem(4, new ItemBuilder(Material.COMPASS).setDisplayname(navigator_name).build());
+        playerInv.setItem(4, new ItemBuilder(Material.COMPASS, 1).setDisplayname(navigator_name).build());
 
-        playerInv.setItem(7, new ItemBuilder(Material.ENDER_PEARL).setDisplayname(enderpearl_name)
+        playerInv.setItem(7, new ItemBuilder(Material.ENDER_PEARL, 1).setDisplayname(enderpearl_name)
                 .setLore(Arrays.asList("§7You can use this enderpearl.", "§7You will receive a new one in 30 seconds."))
                 .build());
     }

@@ -13,8 +13,9 @@ public class ItemBuilder {
     private final ItemMeta itemMeta;
     private final ItemStack itemStack;
 
-    public ItemBuilder(Material mat) {
-        itemStack = new ItemStack(mat);
+    public ItemBuilder(Material mat, int count) {
+        itemStack = new ItemStack(mat, count);
+        itemStack.setAmount(count);
         itemMeta = itemStack.getItemMeta();
     }
 
@@ -26,10 +27,6 @@ public class ItemBuilder {
     public ItemBuilder setLore(List<String> s) {
         itemMeta.setLore(s);
         return this;
-    }
-    @Override
-    public String toString() {
-        return "ItemBuilder{" + "itemMeta=" + itemMeta + ", itemStack=" + itemStack + '}';
     }
 
     public ItemStack build() {

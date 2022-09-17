@@ -1,6 +1,8 @@
 package net.cubeslide.lobbysystem.handler;
 
 import de.dytanic.cloudnet.driver.CloudNetDriver;
+import de.dytanic.cloudnet.driver.service.ServiceInfoSnapshot;
+import de.dytanic.cloudnet.ext.bridge.BridgeServiceProperty;
 import de.dytanic.cloudnet.ext.bridge.player.IPlayerManager;
 import net.cubeslide.lobbysystem.LobbySystem;
 import net.cubeslide.lobbysystem.commands.BuildCMD;
@@ -20,10 +22,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 
 public class InventoryHandler implements Listener {
 
@@ -60,12 +64,58 @@ public class InventoryHandler implements Listener {
         if ((event.getAction() == Action.RIGHT_CLICK_BLOCK) || (event.getAction() == Action.RIGHT_CLICK_AIR)) {
             if ((currentItem.getType() == Material.COMPASS) && (Objects.requireNonNull(currentItem.getItemMeta()).getDisplayName().equals(PlayerHandler.navigator_name))) {
                 for (int i = 0; i < inventory.getSize(); i++) {
-                    inventory.setItem(i, new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).setDisplayname("§8[§5§m---§8]").build());
+                    inventory.setItem(i, new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE, 1).setDisplayname("§8[§5§m---§8]").build());
                 }
 
-                inventory.setItem(10, new ItemBuilder(Material.DIAMOND_SWORD).setDisplayname(skywarsffa_name).build());
-                inventory.setItem(13, new ItemBuilder(Material.GRASS_BLOCK).setDisplayname(oneblock_name).build());
-                inventory.setItem(16, new ItemBuilder(Material.SANDSTONE).setDisplayname(buildffa_name).build());
+
+                final ServiceInfoSnapshot skywarsInfo = CloudNetDriver.getInstance()
+                        .getCloudServiceProvider().getCloudServiceByName("SkywarsFFA-1");
+                int skywars_onlineCount = skywarsInfo.getProperty(BridgeServiceProperty.ONLINE_COUNT)
+                        .get();
+
+
+                final ServiceInfoSnapshot oneblockInfo = CloudNetDriver.getInstance()
+                        .getCloudServiceProvider().getCloudServiceByName("MCOneBlock-1");
+                int oneblockInfo_onlineCount = oneblockInfo.getProperty(BridgeServiceProperty.ONLINE_COUNT)
+                        .get();
+
+                final ServiceInfoSnapshot buildffaInfp = CloudNetDriver.getInstance()
+                        .getCloudServiceProvider().getCloudServiceByName("BuildFFA-1");
+                int buildFFAInfo_onlineCount = buildffaInfp.getProperty(BridgeServiceProperty.ONLINE_COUNT)
+                        .get();
+
+
+                final Logger logger = LobbySystem.getInstance().getLogger();
+
+                logger.info(skywars_onlineCount + "");
+                logger.info(oneblockInfo_onlineCount + "");
+
+                ItemStack skywarsFFAStack;
+
+                if (skywars_onlineCount == 0) {
+                    skywarsFFAStack = new ItemBuilder(Material.DIAMOND_SWORD,1).setDisplayname(skywarsffa_name).setLore(Arrays.asList("§7(Online§8: §6" + skywars_onlineCount + " Player§7)")).build();
+                } else {
+                    skywarsFFAStack = new ItemBuilder(Material.DIAMOND_SWORD, skywars_onlineCount).setDisplayname(skywarsffa_name).setLore(Arrays.asList("§7(Online§8: §6" + skywars_onlineCount + " Players§7)")).build();
+                }
+                inventory.setItem(10, skywarsFFAStack);
+
+                ItemStack oneblockStack;
+                if (buildFFAInfo_onlineCount == 0) {
+                    oneblockStack = new ItemBuilder(Material.GRASS_BLOCK, 1).setDisplayname(oneblock_name).setLore(Arrays.asList("§7(Online§8: §6" + oneblockInfo_onlineCount + " Player§7)")).build();
+                } else {
+                    oneblockStack = new ItemBuilder(Material.GRASS_BLOCK, oneblockInfo_onlineCount).setDisplayname(oneblock_name).setLore(Arrays.asList("§7(Online§8: §6" + oneblockInfo_onlineCount + " Players§7)")).build();
+                }
+                inventory.setItem(13, oneblockStack);
+
+
+                ItemStack buildFFAStack;
+
+                if (buildFFAInfo_onlineCount == 0) {
+                    buildFFAStack = new ItemBuilder(Material.SANDSTONE,1 ).setDisplayname(buildffa_name).setLore(Arrays.asList("§7(Online§8: §6" + buildFFAInfo_onlineCount + " Player§7)")).build();
+                } else {
+                    buildFFAStack = new ItemBuilder(Material.SANDSTONE, oneblockInfo_onlineCount).setDisplayname(buildffa_name).setLore(Arrays.asList("§7(Online§8: §6" + buildFFAInfo_onlineCount + " Players§7)")).build();
+                }
+                inventory.setItem(16, buildFFAStack);
 
                 player.openInventory(inventory);
                 player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1F, 1F);
@@ -104,48 +154,48 @@ public class InventoryHandler implements Listener {
 
         if (event.getCurrentItem() == null) return;
 
-            if (event.getWhoClicked() instanceof Player) {
-                Player player = (Player) event.getWhoClicked();
-                if (!BuildCMD.getInBuildMode().contains(player.getUniqueId())) {
+        if (event.getWhoClicked() instanceof Player) {
+            Player player = (Player) event.getWhoClicked();
+            if (!BuildCMD.getInBuildMode().contains(player.getUniqueId())) {
+                event.setCancelled(true);
+            }
+            if (player.getOpenInventory().getTitle() != null) {
+                if (player.getOpenInventory().getTitle().equals(PlayerHandler.navigator_name)) {
                     event.setCancelled(true);
-                }
-                if (player.getOpenInventory().getTitle() != null) {
-                    if (player.getOpenInventory().getTitle().equals(PlayerHandler.navigator_name)) {
-                        event.setCancelled(true);
 
-                        if (event.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE) return;
+                    if (event.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE) return;
 
-                        if (event.getCurrentItem() != null) {
-                            if (!clickcooldown.containsKey(player.getUniqueId())) {
-                                clickcooldown.put(player.getUniqueId(), System.currentTimeMillis());
+                    if (event.getCurrentItem() != null) {
+                        if (!clickcooldown.containsKey(player.getUniqueId())) {
+                            clickcooldown.put(player.getUniqueId(), System.currentTimeMillis());
+                        } else {
+                            if (System.currentTimeMillis() - clickcooldown.get(player.getUniqueId()) < 2000) {
+                                player.sendMessage(LobbySystem.getPrefix() + "§cPlease wait until you try to click again");
+                                player.closeInventory();
+                                return;
                             } else {
-                                if (System.currentTimeMillis() - clickcooldown.get(player.getUniqueId()) < 2000) {
-                                    player.sendMessage(LobbySystem.getPrefix() + "§cPlease wait until you try to click again");
-                                    player.closeInventory();
-                                    return;
-                                } else {
-                                    clickcooldown.remove(player.getUniqueId());
-                                }
+                                clickcooldown.remove(player.getUniqueId());
                             }
-                            if (event.getCurrentItem().getType() == Material.DIAMOND_SWORD || event.getCurrentItem().getItemMeta().getDisplayName().equals(skywarsffa_name)) {
-                                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
-                                final IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
-                                playerManager.getPlayerExecutor(Objects.requireNonNull(playerManager.getOnlinePlayer(player.getUniqueId()))).connect("SkywarsFFA-1"); //send a player to the target server if the player is login on a proxy
-                            }
-                            if (event.getCurrentItem().getType() == Material.GRASS_BLOCK || event.getCurrentItem().getItemMeta().getDisplayName().equals(oneblock_name)) {
-                                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
-                                final IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
-                                playerManager.getPlayerExecutor(Objects.requireNonNull(playerManager.getOnlinePlayer(player.getUniqueId()))).connect("MCOneBlock-1"); //send a player to the target server if the player is login on a proxy
-                            }
-                            if (event.getCurrentItem().getType() == Material.SANDSTONE || event.getCurrentItem().getItemMeta().getDisplayName().equals(buildffa_name)) {
-                                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
-                                final IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
-                                playerManager.getPlayerExecutor(Objects.requireNonNull(playerManager.getOnlinePlayer(player.getUniqueId()))).connect("BuildFFA-1"); //send a player to the target server if the player is login on a proxy
-                            }
+                        }
+                        if (event.getCurrentItem().getType() == Material.DIAMOND_SWORD || event.getCurrentItem().getItemMeta().getDisplayName().equals(skywarsffa_name)) {
+                            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
+                            final IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
+                            playerManager.getPlayerExecutor(Objects.requireNonNull(playerManager.getOnlinePlayer(player.getUniqueId()))).connect("SkywarsFFA-1"); //send a player to the target server if the player is login on a proxy
+                        }
+                        if (event.getCurrentItem().getType() == Material.GRASS_BLOCK || event.getCurrentItem().getItemMeta().getDisplayName().equals(oneblock_name)) {
+                            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
+                            final IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
+                            playerManager.getPlayerExecutor(Objects.requireNonNull(playerManager.getOnlinePlayer(player.getUniqueId()))).connect("MCOneBlock-1"); //send a player to the target server if the player is login on a proxy
+                        }
+                        if (event.getCurrentItem().getType() == Material.SANDSTONE || event.getCurrentItem().getItemMeta().getDisplayName().equals(buildffa_name)) {
+                            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
+                            final IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
+                            playerManager.getPlayerExecutor(Objects.requireNonNull(playerManager.getOnlinePlayer(player.getUniqueId()))).connect("BuildFFA-1"); //send a player to the target server if the player is login on a proxy
                         }
                     }
                 }
             }
+        }
     }
 
     public static HashMap<UUID, Integer> getHasPlayerHiderCooldown() {

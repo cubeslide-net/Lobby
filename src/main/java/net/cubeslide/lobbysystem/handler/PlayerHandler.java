@@ -1,5 +1,6 @@
 package net.cubeslide.lobbysystem.handler;
 
+import de.lara.labycubeapi.events.LabymodUserJoinEvent;
 import fr.mrmicky.fastboard.FastBoard;
 import net.cubeslide.lobbysystem.LobbySystem;
 import net.cubeslide.lobbysystem.commands.BuildCMD;
@@ -85,6 +86,19 @@ public class PlayerHandler implements Listener {
         instance.getBoards().put(player.getUniqueId(), board);
     }
 
+    private List<Player> labymodPlayers = new ArrayList<>();
+
+    @EventHandler
+    public void on(LabymodUserJoinEvent event) {
+        final Player player = event.getPlayer();
+
+        if(!labymodPlayers.contains(player)) {
+            labymodPlayers.add(player);
+            player.sendMessage(LobbySystem.getPrefix() + "§aThank you for playing with LabyMod!");
+        }
+
+    }
+
     @EventHandler
     public void on(PlayerQuitEvent event) {
         final LobbySystem instance = LobbySystem.getInstance();
@@ -94,8 +108,9 @@ public class PlayerHandler implements Listener {
         if (board != null) {
             board.delete();
         }
-        if(instance.getLabymodPlayers().contains(player)){
-            instance.getLabymodPlayers().remove(player);
+
+        if(labymodPlayers.contains(player)) {
+            labymodPlayers.remove(player);
         }
     }
 

@@ -5,8 +5,6 @@ import de.dytanic.cloudnet.driver.permission.IPermissionManagement;
 import de.dytanic.cloudnet.driver.permission.IPermissionUser;
 import de.dytanic.cloudnet.ext.bridge.player.IPlayerManager;
 import fr.mrmicky.fastboard.FastBoard;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import net.cubeslide.lobbysystem.commands.BuildCMD;
 import net.cubeslide.lobbysystem.commands.CheckpointCMD;
 import net.cubeslide.lobbysystem.commands.SpawnCMD;
@@ -14,7 +12,6 @@ import net.cubeslide.lobbysystem.handler.CheckpointHandler;
 import net.cubeslide.lobbysystem.handler.InventoryHandler;
 import net.cubeslide.lobbysystem.handler.PlayerHandler;
 import net.cubeslide.lobbysystem.utils.ItemBuilder;
-import net.cubeslide.lobbysystem.utils.LabyModProtocol;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -22,15 +19,11 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.messaging.PluginMessageListener;
-
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public final class LobbySystem extends JavaPlugin implements PluginMessageListener {
+public final class LobbySystem extends JavaPlugin {
 
     private static LobbySystem instance;
     private static File file;
@@ -81,8 +74,6 @@ public final class LobbySystem extends JavaPlugin implements PluginMessageListen
         pluginManager.registerEvents(new InventoryHandler(), this);
         pluginManager.registerEvents(new PlayerHandler(), this);
         pluginManager.registerEvents(new CheckpointHandler(), this);
-
-        getServer().getMessenger().registerIncomingPluginChannel(this, "labymod3:main", this);
 
         getConfig().addDefault("prefix", "&3CubeSlide &8» &7");
         getConfig().addDefault("noPermission", "&cYou don't have permissions to do that.");
@@ -157,31 +148,6 @@ public final class LobbySystem extends JavaPlugin implements PluginMessageListen
             players.setExp(0);
             players.setLevel(Integer.valueOf(online));
         });
-    }
-
-
-    private List<Player> labymodPlayers = new ArrayList<>();
-
-    @Override
-    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        if (!channel.equals("labymod3:main")) {
-            return;
-        }
-
-        DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
-
-        ByteBuf buf = Unpooled.wrappedBuffer(message);
-        String key = LabyModProtocol.readString(buf, Short.MAX_VALUE);
-        if(key.equals("INFO")) {
-            if(!labymodPlayers.contains(player)) {
-                labymodPlayers.add(player);
-                player.sendMessage(getPrefix() + "§aThank you for playing with LabyMod!");
-            }
-        }
-    }
-
-    public List<Player> getLabymodPlayers() {
-        return labymodPlayers;
     }
 
     public Map<UUID, FastBoard> getBoards() {

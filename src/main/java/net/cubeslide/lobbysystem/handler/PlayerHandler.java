@@ -94,6 +94,9 @@ public class PlayerHandler implements Listener {
         if (board != null) {
             board.delete();
         }
+        if(instance.getLabymodPlayers().contains(player)){
+            instance.getLabymodPlayers().remove(player);
+        }
     }
 
     @EventHandler

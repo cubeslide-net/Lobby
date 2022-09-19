@@ -1,82 +1,12 @@
 package net.cubeslide.lobbysystem.utils;
 
-import com.google.gson.JsonElement;
-import net.minecraft.network.PacketDataSerializer;
-import net.minecraft.network.protocol.game.PacketPlayOutCustomPayload;
-import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
-import org.bukkit.entity.Player;
-import com.google.gson.JsonElement;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.DecoderException;
-import io.netty.handler.codec.EncoderException;
 
 import java.nio.charset.Charset;
-import java.util.UUID;
 
 public class LabyModProtocol {
-
-
-    /**
-     * Gets the bytes that are required to send the given message
-     *
-     * @param messageKey      the message's key
-     * @param messageContents the message's contents
-     * @return the byte array that should be the payload
-     */
-    public static byte[] getBytesToSend( String messageKey, String messageContents ) {
-        // Getting an empty buffer
-        ByteBuf byteBuf = Unpooled.buffer();
-
-        // Writing the message-key to the buffer
-        writeString( byteBuf, messageKey );
-
-        // Writing the contents to the buffer
-        writeString( byteBuf, messageContents );
-
-        // Copying the buffer's bytes to the byte array
-        byte[] bytes = new byte[byteBuf.readableBytes()];
-        byteBuf.readBytes( bytes );
-
-        // Release the buffer
-        byteBuf.release();
-
-        // Returning the byte array
-        return bytes;
-    }
-
-    /**
-     * Writes a varint to the given byte buffer
-     *
-     * @param buf   the byte buffer the int should be written to
-     * @param input the int that should be written to the buffer
-     */
-    private static void writeVarIntToBuffer( ByteBuf buf, int input ) {
-        while ( (input & -128) != 0 ) {
-            buf.writeByte( input & 127 | 128 );
-            input >>>= 7;
-        }
-
-        buf.writeByte( input );
-    }
-
-    /**
-     * Writes a string to the given byte buffer
-     *
-     * @param buf    the byte buffer the string should be written to
-     * @param string the string that should be written to the buffer
-     */
-    private static void writeString( ByteBuf buf, String string ) {
-        byte[] abyte = string.getBytes( Charset.forName( "UTF-8" ) );
-
-        if ( abyte.length > Short.MAX_VALUE ) {
-            throw new EncoderException( "String too big (was " + string.length() + " bytes encoded, max " + Short.MAX_VALUE + ")" );
-        } else {
-            writeVarIntToBuffer( buf, abyte.length );
-            buf.writeBytes( abyte );
-        }
-    }
-
+    
     /**
      * Reads a varint from the given byte buffer
      *

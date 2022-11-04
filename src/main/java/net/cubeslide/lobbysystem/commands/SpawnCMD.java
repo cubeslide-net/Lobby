@@ -20,27 +20,10 @@ public class SpawnCMD implements CommandExecutor {
             return true;
         }
         Player player = (Player) sender;
-        if (args.length == 1) {
-            if (!player.hasPermission("LobbySystem.admin")) {
-                player.sendMessage(prefix + LobbySystem.getNoPermission());
-                return true;
-            }
-            if (args[0].equalsIgnoreCase("set")) {
-                instance.getConfig().set("spawn", player.getLocation());
-                player.sendMessage(prefix + "§7Spawn set.");
-            } else if (args[0].equalsIgnoreCase("delete")) {
-                if (instance.getConfig().get("spawn") != null) {
-                    instance.getConfig().set("spawn", null);
-                    instance.saveConfig();
-                    player.sendMessage(prefix + "§7Spawn deleted.");
-                }
-            } else {
-                player.sendMessage(prefix + LobbySystem.getPrefixUse() + "spawn (set/delete)");
-            }
+        if (instance.getConfig().get("spawn") != null) {
+            player.teleport((Location) Objects.requireNonNull(instance.getConfig().get("spawn")));
         } else {
-            if (instance.getConfig().get("spawn") != null) {
-                player.teleport((Location) Objects.requireNonNull(instance.getConfig().get("spawn")));
-            }
+            player.sendMessage(prefix + "§cSomething went wrong! Please tell the Admin (Spawn not set) ");
         }
         return false;
     }

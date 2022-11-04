@@ -1,13 +1,10 @@
 package net.cubeslide.lobbysystem.handler;
 
-import de.lara.labycubeapi.events.LabymodUserJoinEvent;
 import fr.mrmicky.fastboard.FastBoard;
 import net.cubeslide.lobbysystem.LobbySystem;
 import net.cubeslide.lobbysystem.commands.BuildCMD;
 import net.cubeslide.lobbysystem.utils.ItemBuilder;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -36,15 +33,12 @@ public class PlayerHandler implements Listener {
     public static void setInventory(Player player) {
         final Inventory playerInv = player.getInventory();
         playerInv.clear();
-        playerInv.setItem(1,
-                new ItemBuilder(Material.BLAZE_ROD,1).setDisplayname(playerhider_name).build());
-        playerInv.setItem(3, new ItemBuilder(Material.TNT,1).setDisplayname(silenthub_name).build());
+        playerInv.setItem(1, new ItemBuilder(Material.BLAZE_ROD, 1).setDisplayname(playerhider_name).build());
+        playerInv.setItem(3, new ItemBuilder(Material.TNT, 1).setDisplayname(silenthub_name).build());
 
         playerInv.setItem(4, new ItemBuilder(Material.COMPASS, 1).setDisplayname(navigator_name).build());
 
-        playerInv.setItem(7, new ItemBuilder(Material.ENDER_PEARL, 1).setDisplayname(enderpearl_name)
-                .setLore(Arrays.asList("§7You can use this enderpearl.", "§7You will receive a new one in 30 seconds."))
-                .build());
+        playerInv.setItem(7, new ItemBuilder(Material.ENDER_PEARL, 1).setDisplayname(enderpearl_name).setLore(Arrays.asList("§7You can use this enderpearl.", "§7You will receive a new one in 30 seconds.")).build());
     }
 
     public static HashMap<UUID, Integer> getPlayerUsedEP() {
@@ -66,6 +60,10 @@ public class PlayerHandler implements Listener {
         } else {
             player.sendMessage(prefix + "§cSpawn Error: §7Please contact a team member.");
         }
+
+        player.setAllowFlight(true);
+        player.setFlying(false);
+
         setInventory(player);
         player.setWalkSpeed(0.3F);
         player.setMaxHealth(6D);
@@ -81,22 +79,8 @@ public class PlayerHandler implements Listener {
         }
 
         FastBoard board = new FastBoard(player);
-        board.updateTitle(
-                Objects.requireNonNull(LobbySystem.getInstance().getConfig().getString("scoreboard.title")).replace("&", "§"));
+        board.updateTitle(Objects.requireNonNull(LobbySystem.getInstance().getConfig().getString("scoreboard.title")).replace("&", "§"));
         instance.getBoards().put(player.getUniqueId(), board);
-    }
-
-    private List<Player> labymodPlayers = new ArrayList<>();
-
-    @EventHandler
-    public void on(LabymodUserJoinEvent event) {
-        final Player player = event.getPlayer();
-
-        if(!labymodPlayers.contains(player)) {
-            labymodPlayers.add(player);
-            player.sendMessage(LobbySystem.getPrefix() + "§aThank you for playing with LabyMod!");
-        }
-
     }
 
     @EventHandler
@@ -107,10 +91,6 @@ public class PlayerHandler implements Listener {
         FastBoard board = instance.getBoards().remove(player.getUniqueId());
         if (board != null) {
             board.delete();
-        }
-
-        if(labymodPlayers.contains(player)) {
-            labymodPlayers.remove(player);
         }
     }
 
@@ -181,6 +161,21 @@ public class PlayerHandler implements Listener {
     }
 
     @EventHandler
+    public void on(PlayerToggleFlightEvent event) {
+        final Player player = event.getPlayer();
+
+        if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR || player.isFlying()) {
+            return;
+        }
+
+        player.setAllowFlight(false);
+        player.setFlying(false);
+        player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1, 1);
+        player.setVelocity(player.getLocation().getDirection().multiply(1.5).setY(1));
+        event.setCancelled(true);
+    }
+
+    @EventHandler
     public void onBreak(BlockBreakEvent event) {
         final Player player = event.getPlayer();
         final UUID playerUUID = player.getUniqueId();
@@ -224,18 +219,30 @@ public class PlayerHandler implements Listener {
     public void on(PlayerMoveEvent event) {
         final Player player = event.getPlayer();
         final UUID playerUUID = player.getUniqueId();
+
+        if(player.isOnGround()) {
+            player.setAllowFlight(true);
+            player.setFlying(false);
+        }
+
+        final Random random = new Random();
+        Particle.DustOptions dustOptions = new Particle.DustOptions(Color.fromRGB(random.nextInt(255), random.nextInt(255), random.nextInt(255)), 1);
+        player.spawnParticle(Particle.REDSTONE, player.getLocation(), 5, dustOptions);
+
         if (BuildCMD.getInBuildMode().contains(playerUUID) || player.getLocation().getY() > 0) {
             return;
         }
         if (player.getLocation().getBlockY() < 0) {
-            Location loc = CheckpointHandler.getCurrentCheckpoint().get(playerUUID);
-            if (loc == null) {
-                player.teleport((Location) Objects.requireNonNull(instance.getConfig().get("spawn")));
-            } else {
-                player.teleport(CheckpointHandler.getCurrentCheckpoint().get(playerUUID));
-                player.sendMessage(LobbySystem.getPrefix()
-                        + "You were teleported to your last checkpoint. Use §3/checkpoint remove§7 to respawn at spawn.");
-            }
+            player.teleport((Location) Objects.requireNonNull(instance.getConfig().get("spawn")));
+        }
+    }
+
+    @EventHandler
+    public void onFall(EntityDamageEvent event) {
+        if(event.getEntity() instanceof Player && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+            Player player = (Player) event.getEntity();
+
+            player.setAllowFlight(true);
         }
     }
 

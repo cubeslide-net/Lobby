@@ -6,9 +6,7 @@ import de.dytanic.cloudnet.driver.permission.IPermissionUser;
 import de.dytanic.cloudnet.ext.bridge.player.IPlayerManager;
 import fr.mrmicky.fastboard.FastBoard;
 import net.cubeslide.lobbysystem.commands.BuildCMD;
-import net.cubeslide.lobbysystem.commands.CheckpointCMD;
 import net.cubeslide.lobbysystem.commands.SpawnCMD;
-import net.cubeslide.lobbysystem.handler.CheckpointHandler;
 import net.cubeslide.lobbysystem.handler.InventoryHandler;
 import net.cubeslide.lobbysystem.handler.PlayerHandler;
 import net.cubeslide.lobbysystem.utils.ItemBuilder;
@@ -19,14 +17,12 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import java.io.File;
-import java.io.IOException;
+
 import java.util.*;
 
 public final class LobbySystem extends JavaPlugin {
 
     private static LobbySystem instance;
-    private static File file;
     private final Map<UUID, FastBoard> boards = new HashMap<>();
     ArrayList<String> tmp_list = new ArrayList();
 
@@ -54,26 +50,13 @@ public final class LobbySystem extends JavaPlugin {
         return Objects.requireNonNull(instance.getConfig().getString("prefixUse")).replace("&", "§");
     }
 
-    public static File getCheckpointFile() {
-        return file;
-    }
-
     @Override
     public void onEnable() {
         instance = this;
-        file = new File("plugins/LobbySystem/", "checkpoints.yml");
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
 
         final PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(new InventoryHandler(), this);
         pluginManager.registerEvents(new PlayerHandler(), this);
-        pluginManager.registerEvents(new CheckpointHandler(), this);
 
         getConfig().addDefault("prefix", "&3CubeSlide &8» &7");
         getConfig().addDefault("noPermission", "&cYou don't have permissions to do that.");
@@ -89,7 +72,6 @@ public final class LobbySystem extends JavaPlugin {
 
         Objects.requireNonNull(getCommand("spawn")).setExecutor(new SpawnCMD());
         Objects.requireNonNull(getCommand("build")).setExecutor(new BuildCMD());
-        Objects.requireNonNull(getCommand("checkpoint")).setExecutor(new CheckpointCMD());
 
         getServer().getScheduler().runTaskTimer(this, () -> {
             for (FastBoard board : this.boards.values()) {
@@ -110,8 +92,8 @@ public final class LobbySystem extends JavaPlugin {
                 if (!map.containsKey(player.getUniqueId())) return;
                 final String enderpearl_name = "§8[§2Ender§aPearl§8]";
                 if (map.get(player.getUniqueId()) < 1) {
-                    if (!player.getInventory().contains(new ItemBuilder(Material.ENDER_PEARL,1 ).setDisplayname(enderpearl_name).setLore(Arrays.asList("§7You can use this enderpearl.", "§7You will receive a new one in 30 seconds.")).build())) {
-                        player.getInventory().setItem(7, new ItemBuilder(Material.ENDER_PEARL,1 ).setDisplayname(enderpearl_name).setLore(Arrays.asList("§7You can use this enderpearl.", "§7You will receive a new one in 30 seconds.")).build());
+                    if (!player.getInventory().contains(new ItemBuilder(Material.ENDER_PEARL, 1).setDisplayname(enderpearl_name).setLore(Arrays.asList("§7You can use this enderpearl.", "§7You will receive a new one in 30 seconds.")).build())) {
+                        player.getInventory().setItem(7, new ItemBuilder(Material.ENDER_PEARL, 1).setDisplayname(enderpearl_name).setLore(Arrays.asList("§7You can use this enderpearl.", "§7You will receive a new one in 30 seconds.")).build());
                         PlayerHandler.getPlayerUsedEP().remove(player.getUniqueId());
                     }
                 } else {
